@@ -178,5 +178,124 @@ namespace MadisonMetroSDK
                 return null;
             }
         }
+
+        private List<VehicleLocation> ParseVehicles(string vehicleData, string routeId)
+        {
+            List<VehicleLocation> locations = new List<VehicleLocation>();
+
+            if (string.IsNullOrEmpty(vehicleData))
+            {
+                return locations;
+            }
+
+            string[] vehicles = vehicleData.Split(';');
+            for (int i = 0; i < vehicles.Length; i++)
+            {
+                string[] vehicleInfo = vehicles[i].Split('|');
+                if (vehicleInfo.Length >= 4)
+                {
+                    decimal latitude = decimal.Parse(vehicleInfo[0]);
+                    decimal longitude = decimal.Parse(vehicleInfo[1]);
+
+                    int direction = int.Parse(vehicleInfo[2]);
+
+                    VehicleLocation location = new VehicleLocation();
+                    location.Number = vehicleInfo[3];
+                    location.Data = vehicleInfo[3];
+                    location.Latitude = latitude;
+                    location.Longitude = longitude;
+                    location.Direction = direction;
+                    location.RouteId = routeId;
+
+                    locations.Add(location);
+                }
+            }
+
+            return locations;
+        }
+
+        private List<RouteStop> ParseStops(string stopData, int stopType)
+        {
+            List<RouteStop> busStops = new List<RouteStop>();
+            if (string.IsNullOrEmpty(stopData))
+            {
+                return busStops;
+            }
+
+            //stopID|lat|lon|name|dir|time time time;
+            string[] stops = stopData.Split(';');
+            foreach (string stop in stops)
+            {
+                if (!string.IsNullOrEmpty(stop))
+                {
+                    string[] stopInfo = stop.Split('|');
+
+                    decimal latitude = decimal.Parse(stopInfo[0]);
+                    decimal longitude = decimal.Parse(stopInfo[1]);
+
+                    if (latitude == 0.0m || longitude == 0.0m)
+                    {
+                        continue;
+                    }
+
+                    RouteStop newStop = new RouteStop();
+                    newStop.Latitude = latitude;
+                    newStop.Longitude = longitude;
+                    newStop.Name = stopInfo[2];
+                    newStop.StopType = stopType;
+                    newStop.StopId = string.Format("{0}{1}", latitude, longitude);
+                    newStop.Direction = stopInfo[3];
+
+                    busStops.Add(newStop);
+                }
+            }
+
+            return busStops;
+        }
+
+        private List<RouteStopTime> ParseStopTimes(string stopData, int stopType, string routeId)
+        {
+            List<RouteStopTime> routeStopTimes = new List<RouteStopTime>();
+            if (string.IsNullOrEmpty(stopData))
+            {
+                return routeStopTimes;
+            }
+
+            //stopID|lat|lon|name|dir|time time time;
+            string[] stops = stopData.Split(';');
+            foreach (string stop in stops)
+            {
+                if (!string.IsNullOrEmpty(stop))
+                {
+                    string[] stopInfo = stop.Split('|');
+
+                    decimal latitude = decimal.Parse(stopInfo[0]);
+                    decimal longitude = decimal.Parse(stopInfo[1]);
+
+                    if (latitude == 0.0m || longitude == 0.0m)
+                    {
+                        continue;
+                    }
+
+                    string times = stopInfo[4]; // next n buses
+                    string[] arrayTimes = times.Split(new string[] { "<br>" }, StringSplitOptions.None);
+
+
+                    if (string.IsNullOrEmpty(times))
+                    {
+                        times = @"No buses available";
+                    }
+
+                    string stopId = string.Format("{0}{1}", latitude, longitude);
+                    RouteStopTime stopTime = new RouteStopTime();
+                    stopTime.Data = times;
+                    stopTime.RouteId = routeId;
+                    stopTime.StopId = stopId;
+                    routeStopTimes.Add(stopTime);
+                }
+            }
+
+            return routeStopTimes;
+        }
     }
 }
