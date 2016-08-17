@@ -9,17 +9,6 @@ namespace MadisonMetroSDK
 {
     public class MadisonMetro
     {
-        // TODO add real route data
-        private static Dictionary<string, Route> routesByRouteNumber = new Dictionary<string, Route>()
-        {
-            { "01", new Route() { Name = "Route 1", Id = "01" } },
-            { "02", new Route() { Name = "Route 2", Id = "02" } },
-            { "03", new Route() { Name = "Route 3", Id = "03" } },
-            { "04", new Route() { Name = "Route 4", Id = "04" } },
-            { "06", new Route() { Name = "Route 6", Id = "06" } },
-            { "09", new Route() { Name = "Route 9", Id = "09" } }
-        };
-
         /// <summary>
         /// Gets all currently active routes in the Madison Metro system
         /// </summary>
@@ -370,5 +359,46 @@ namespace MadisonMetroSDK
 
             return routeStopTimes;
         }
+
+        private static Dictionary<string, Route> routesByRouteNumber = new Dictionary<string, Route>()
+        {
+            { "01", new Route() { Name = "Route 1", Id = "01" } },
+            { "02", new Route() { Name = "Route 2", Id = "02" } },
+            { "03", new Route() { Name = "Route 3", Id = "03" } },
+            { "04", new Route() { Name = "Route 4", Id = "04" } },
+            { "05", new Route() { Name = "Route 5", Id = "05" } },
+            { "06", new Route() { Name = "Route 6", Id = "06" } },
+            { "07", new Route() { Name = "Route 7", Id = "07" } },
+            { "08", new Route() { Name = "Route 8", Id = "08" } },
+            { "10", new Route() { Name = "Route 10", Id = "10" } },
+            { "11", new Route() { Name = "Route 11", Id = "11" } },
+            { "12", new Route() { Name = "Route 12", Id = "12" } },
+            { "13", new Route() { Name = "Route 13", Id = "13" } },
+            { "14", new Route() { Name = "Route 14", Id = "14" } },
+            { "15", new Route() { Name = "Route 15", Id = "15" } },
+            { "16", new Route() { Name = "Route 16", Id = "16" } },
+            { "17", new Route() { Name = "Route 17", Id = "17" } },
+            { "18", new Route() { Name = "Route 18", Id = "18" } },
+            { "19", new Route() { Name = "Route 19", Id = "19" } },
+            { "20", new Route() { Name = "Route 20", Id = "20" } },
+            { "21", new Route() { Name = "Route 21", Id = "21" } },
+            { "22", new Route() { Name = "Route 22", Id = "22" } },
+            { "25", new Route() { Name = "Route 25", Id = "25" } },
+            { "26", new Route() { Name = "Route 26", Id = "26" } },
+            { "27", new Route() { Name = "Route 27", Id = "27" } },
+            { "28", new Route() { Name = "Route 28", Id = "28" } },
+            { "29", new Route() { Name = "Route 29", Id = "29" } },
+            { "30", new Route() { Name = "Route 30", Id = "30" } },
+            { "31", new Route() { Name = "Route 31", Id = "31" } },
+            { "32", new Route() { Name = "Route 32", Id = "32" } },
+            { "33", new Route() { Name = "Route 33", Id = "33" } },
+            { "34", new Route() { Name = "Route 34", Id = "34" } },
+            { "35", new Route() { Name = "Route 35", Id = "35" } },
+            { "36", new Route() { Name = "Route 36", Id = "36" } },
+            { "37", new Route() { Name = "Route 37", Id = "37" } },
+            { "38", new Route() { Name = "Route 38", Id = "38" } },
+            { "39", new Route() { Name = "Route 39", Id = "39" } },
+            { "40", new Route() { Name = "Route 40", Id = "40" } },
+        };
     }
 }
