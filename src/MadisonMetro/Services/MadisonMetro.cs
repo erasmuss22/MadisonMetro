@@ -253,12 +253,24 @@ namespace MadisonMetroSDK
                     int direction = int.Parse(vehicleInfo[2]);
 
                     VehicleLocation location = new VehicleLocation();
-                    location.Number = vehicleInfo[3];
-                    location.Data = vehicleInfo[3];
                     location.Latitude = latitude;
                     location.Longitude = longitude;
                     location.Direction = direction;
                     location.RouteId = routeId;
+
+                    //"<b>E Towne</b><br>Vehicle No.: 121<br>Next Timepoint: MATC Truax"
+                    string[] splitOnBr = vehicleInfo[3].Split(new string[] { "<br>" }, StringSplitOptions.None);
+                    if (splitOnBr != null && splitOnBr.Length > 2)
+                    {
+                        string finalStop = splitOnBr[0].Replace("<b>", string.Empty).Replace("</b>", string.Empty);
+                        location.FinalStop = finalStop;
+
+                        string vehicleNo = splitOnBr[1];
+                        location.Number = vehicleNo.Replace("Vehicle No.: ", string.Empty);
+
+                        string nextStop = splitOnBr[2];
+                        location.NextStop = nextStop.Replace("Next Timepoint: ", string.Empty);
+                    }
 
                     locations.Add(location);
                 }
@@ -330,21 +342,29 @@ namespace MadisonMetroSDK
                         continue;
                     }
 
-                    string times = stopInfo[4]; // next n buses
-                    string[] arrayTimes = times.Split(new string[] { "<br>" }, StringSplitOptions.None);
-
-
-                    if (string.IsNullOrEmpty(times))
-                    {
-                        times = @"No buses available";
-                    }
+                    string allTimes = stopInfo[4]; // next n buses
 
                     string stopId = string.Format("{0}{1}", latitude, longitude);
                     RouteStopTime stopTime = new RouteStopTime();
-                    stopTime.Data = times;
                     stopTime.RouteId = routeId;
                     stopTime.StopId = stopId;
                     routeStopTimes.Add(stopTime);
+
+                    if (string.IsNullOrEmpty(allTimes))
+                    {
+                        stopTime.Times.Add("No buses available");
+                    }
+                    else
+                    {
+                        string[] individualTimes = allTimes.Split(new string[] { "<br>" }, StringSplitOptions.None);
+                        foreach (string individualTime in individualTimes)
+                        {
+                            if (!string.IsNullOrWhiteSpace(individualTime))
+                            {
+                                stopTime.Times.Add(individualTime);
+                            }
+                        }
+                    }
                 }
             }
 

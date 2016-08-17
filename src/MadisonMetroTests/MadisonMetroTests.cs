@@ -3,6 +3,7 @@ using System.Linq;
 using MadisonMetroSDK;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MadisonMetroTests
 {
@@ -38,6 +39,14 @@ namespace MadisonMetroTests
         {
             Route route = MadisonMetro.GetRouteById("blah");
             Assert.IsNull(route);
+        }
+
+        [TestMethod]
+        public async Task GetCurrentLocation_Valid()
+        {
+            RouteCurrentData data = await MadisonMetro.GetRouteCurrentData("06");
+            Assert.IsTrue(data.VehicleData.Count > 0);
+            Assert.IsTrue(data.VehicleData.All(v => v.Number != null && v.FinalStop != null && v.NextStop != null));
         }
     }
 }

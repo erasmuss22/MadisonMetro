@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\RouteCurrentData.cs" />
     <Compile Include="Models\RoutePoint.cs" />
     <Compile Include="Models\RouteStop.cs" />
     <Compile Include="Models\RouteStopTime.cs" />
