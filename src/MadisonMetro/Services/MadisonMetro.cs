@@ -59,12 +59,12 @@ namespace MadisonMetroSDK
         /// </summary>
         /// <param name="route">A route with a valid route id</param>
         /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the route is invalid or the id doesn't exist</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the route is invalid or the id doesn't exist</exception>
         public static async Task<IEnumerable<RoutePoint>> GetRoutePath(Route route)
         {
             if (route == null)
             {
-                throw new ArgumentNullException("A route with an id is required to get the path of the route");
+                throw new ArgumentException("A route with an id is required to get the path of the route");
             }
 
             return await GetRoutePath(route.Id);
@@ -76,12 +76,12 @@ namespace MadisonMetroSDK
         /// </summary>
         /// <param name="routeId">The unique identifier for a route</param>
         /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">Thrown when the route id is null or the id doesn't exist</exception>
+        /// <exception cref="System.ArgumentException">Thrown when the route id is null or the id doesn't exist</exception>
         public static async Task<IEnumerable<RoutePoint>> GetRoutePath(string routeId)
         {
             if (routeId == null || !routesByRouteNumber.ContainsKey(routeId))
             {
-                throw new ArgumentNullException("A valid route id is required to retrieve path data");
+                throw new ArgumentException("A valid route id is required to retrieve path data");
             }
 
             List<RoutePoint> routeLegs = new List<RoutePoint>();
@@ -123,6 +123,59 @@ namespace MadisonMetroSDK
             }
 
             return routeLegs;
+        }
+
+        /// <summary>
+        /// Returns current vehicle locations and stop times for the specified route
+        /// </summary>
+        /// <param name="routeId">The unique identifier for a route</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentException">Thrown when the route id is null or the id doesn't exist</exception>
+        public static async Task<RouteCurrentData> GetRouteCurrentData(Route route)
+        {
+            if (route == null)
+            {
+                throw new ArgumentException("A route with an id is required to get the path of the route");
+            }
+
+            return await GetRouteCurrentData(route.Id);
+        }
+
+        /// <summary>
+        /// Returns current vehicle locations and stop times for the specified route id
+        /// </summary>
+        /// <param name="routeId">The unique identifier for a route</param>
+        /// <returns></returns>
+        /// <exception cref="System.ArgumentException">Thrown when the route id is null or the id doesn't exist</exception>
+        public static async Task<RouteCurrentData> GetRouteCurrentData(string routeId)
+        {
+            if (routeId == null || !routesByRouteNumber.ContainsKey(routeId))
+            {
+                throw new ArgumentException("A valid route id is required to retrieve path data");
+            }
+
+            RouteCurrentData currentData = new RouteCurrentData();
+
+            string[] busData = await UpdateRouteAndLocationData(routeId);
+
+            if (busData != null && busData.Length > 3)
+            {
+                List<RouteStopTime> routeStopTimes = new List<RouteStopTime>();
+                string stops = busData[3];
+                if (!string.IsNullOrEmpty(stops))
+                {
+                    routeStopTimes.AddRange(ParseStopTimes(stops, 0, routeId));
+                }
+
+                routeStopTimes.AddRange(ParseStopTimes(busData[1], 1, routeId));
+
+                List<VehicleLocation> locations = ParseVehicles(busData[2], routeId);
+
+                currentData.StopData = routeStopTimes;
+                currentData.VehicleData = locations;
+            }
+
+            return currentData;
         }
 
         private static async Task<string> UpdateRoute(string routeId)
@@ -179,7 +232,7 @@ namespace MadisonMetroSDK
             }
         }
 
-        private List<VehicleLocation> ParseVehicles(string vehicleData, string routeId)
+        private static List<VehicleLocation> ParseVehicles(string vehicleData, string routeId)
         {
             List<VehicleLocation> locations = new List<VehicleLocation>();
 
@@ -192,7 +245,7 @@ namespace MadisonMetroSDK
             for (int i = 0; i < vehicles.Length; i++)
             {
                 string[] vehicleInfo = vehicles[i].Split('|');
-                if (vehicleInfo.Length >= 4)
+                if (vehicleInfo.Length > 3)
                 {
                     decimal latitude = decimal.Parse(vehicleInfo[0]);
                     decimal longitude = decimal.Parse(vehicleInfo[1]);
@@ -214,7 +267,7 @@ namespace MadisonMetroSDK
             return locations;
         }
 
-        private List<RouteStop> ParseStops(string stopData, int stopType)
+        private static List<RouteStop> ParseStops(string stopData, int stopType)
         {
             List<RouteStop> busStops = new List<RouteStop>();
             if (string.IsNullOrEmpty(stopData))
@@ -253,7 +306,7 @@ namespace MadisonMetroSDK
             return busStops;
         }
 
-        private List<RouteStopTime> ParseStopTimes(string stopData, int stopType, string routeId)
+        private static List<RouteStopTime> ParseStopTimes(string stopData, int stopType, string routeId)
         {
             List<RouteStopTime> routeStopTimes = new List<RouteStopTime>();
             if (string.IsNullOrEmpty(stopData))
